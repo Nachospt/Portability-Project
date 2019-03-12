@@ -1,0 +1,166 @@
+##Captura de direcci?n URL
+
+file.choose()
+setwd()
+getwd()
+
+##Varios
+
+Attributes()
+Attr()
+rbind(head(), tail())
+Summary() ## Descripci?n de datos de matriz o tabla
+
+## Efficient increasing functions
+#Remove unnecessary objects
+rm()
+
+# Track code time to run
+start.time = Sys.time()
+end.time = Sys.time()
+time.taken = end.time - start.time
+time.taken
+
+# Check object disk storage
+print(object.size(), units="Mb")
+
+#colclasses argument: define the column types so R doesnt need to check whole table (useful for large tables)
+read.table(M, colClasses = classes)
+
+##Lectura de archivos
+DatosPaises = read.table("PaisesProteinas.txt", header=TRUE, row.names=1, sep = "\t")
+Dat = read.csv(".csv")
+Dat = read.csv2(".csv") ## Comas en vez de puntos y coma
+library(foreign)
+Vinos=read.spss("vinos.sav", to.data.frame = TRUE)
+
+## Save an R object
+saveRDS(model, "model.rds")
+my_model <- readRDS("model.rds")
+
+## Guardado en archivos
+output <- file("output_file.txt", "w")
+write(x, file = output)
+close(output)
+
+## Operaciones
+#Como group by de SQL
+housing.sum <- aggregate(housing["Home.Value"], housing["State"], FUN=mean)
+
+## Cancel scientific notation in print
+options(scipen=999)
+
+## Calculos sumas o medias de los elementos de una matriz
+rowMeans()
+rowsums()
+## Une por un punto todos los factores de dos listas dando todas las combinaciones.
+interaction(a,b)
+#
+#
+write.csv(Results.Sample, file = "Tablita.csv",row.names=TRUE, na="")
+
+## Exploring the functions in a package
+## R provides useful ways of exploring the functions of the R packages, If, for example, we wanted to list all functions in a specific package we would use a function similar to this:
+  
+  lsp <- function(package, all.names = FALSE, pattern) 
+  {
+    package <- deparse(substitute(package))
+    ls(
+      pos = paste("package", package, sep = ":"), 
+      all.names = all.names, 
+      pattern = pattern
+    )
+  }
+## And then we would call it like this:
+  lsp(RODBC)
+  
+## Get all the files of a folder
+  my_files <- list.files(pattern = "\\.csv$")
+  
+## Read all at once
+  my_data <- lapply(my_files, read.csv)
+  
+## Dates
+  M$Date2 = as.POSIXct(strptime(M$Date, "%m/%d/%Y %I:%M:%S %p"))
+  
+## Vectorized functions
+  do.call()
+  
+## Read all column classes
+## With data frames it will coerce the columns to use DF as a matrix is irrelevant :/
+# apply(Dat, class)
+
+## Checking NAs
+  any(is.na(Datx))
+  sum(is.na(Datx))
+  
+## Fix plot pane problem: repit dev.off until null device = 1
+  dev.off()
+  plot(rnorm(50), rnorm(50))
+  
+## Get numeric columns
+  pre.temp <- pre.temp[,sapply(pre.temp, is.numeric)]
+
+## Apply a function to each cell of a ragged array, that is to each (non-empty) group of values given by a unique combination of the levels of certain factors. 
+  tapply(ingresos,list(FactorEstado,Sex), mean) 
+  
+## Evaluating object size
+  format(object.size(DF.3), units = "MB")
+  sort( sapply(ls(),function(x){object.size(get(x))}))
+  sort( sapply(ls(),function(x){format(object.size(get(x)), units = "MB")}))
+## An empty string takes 48 bytes: 40 bytes for metadata... 8 bytes for the string
+## Memory required = no. of column * no. of rows * 8 bytes/numeric
+  
+## Empty space
+  rm(DF.1)
+  
+## SVM Support vector machines
+  library(e1071)
+  svm_model<- svm(y ~ ., 
+                  data = trainset, 
+                  type = "C-classification", 
+                  kernel = "linear", 
+                  scale = FALSE)
+  svm_model$SV
+  svm_model$index
+  svm_model$rho
+  #compute training accuracy
+  pred_train <- predict(svm_model, trainset)
+  mean(pred_train == trainset$y)
+  
+  plot(svm_model, data = trainset)
+  
+  ## SVM with parameter tuning
+  tune_out <-tune.svm(x = trainset[, -3], y = trainset[, 3], 
+             type = "C-classification", 
+             kernel = "polynomial", degree = 2, cost = 10^(-1:2), 
+             gamma = c(0.1, 1, 10), coef0 = c(0.1, 1, 10))
+  
+## Create train-tests
+  #calculate accuracy for n distinct 80/20 train/test partitions
+  for (i in 1:100){ 
+    iris[, "train"] <- ifelse(runif(nrow(iris))<0.8, 1, 0)
+    trainColNum <- grep("train", names(iris))
+    trainset <- iris[iris$train == 1, -trainColNum]
+    testset <- iris[iris$train == 0, -trainColNum]
+    svm_model <- svm(Species~ ., data = trainset, 
+                     type = "C-classification", kernel = "linear")
+    pred_test <- predict(svm_model, testset)
+    accuracy[i] <- mean(pred_test == testset$Species)
+  }
+  
+  #mean accuracy and standard deviation
+  mean(accuracy) 
+  sd(accuracy)
+  
+  ## Get function code
+  debug(function)
+  function()
+    
+  ## Do.call Usefull to feed many undetermined arguments to a function like rbind
+  > allframes = lapply(1:20,function(x)read.csv(paste(x,'csv',sep='.')))
+  > sapply(allframes,nrow)
+  [1] 21 25 27 25 27 21 24 28 23 23 22 26 24 23 25 29 28 30 27 29
+  > answer = do.call(rbind,allframes)
+  > nrow(answer)
+  [1] 507
