@@ -12,3 +12,6 @@ Datos = read.csv("Portabilidty_Set.csv")
 
 # 1.2 Library Load
 library(ggplot2)
+library(data.table)
+library(dplyr)
+library(lattice)
