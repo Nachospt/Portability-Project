@@ -23,9 +23,10 @@ library(data.table)
 library(dplyr)
 library(lattice)
 library(shiny)
+library(shinythemes)
 library(rsconnect)
 
-## 2.Shinyapps.io authorization
+## 2.Server Configuration
   # 2.1 Shinyapps.io login
 secret = readLines(con = "C:/Users/a1380/Documents/CredencialShiny.txt")
 rsconnect::setAccountInfo(name='nspproject',
@@ -36,8 +37,12 @@ rsconnect::deployApp("C:/Users/a1380/Desktop/Portability Project")
 
 ## 3.Shiny Application
 
-ui <- fluidPage()
+ui <- fluidPage(themeSelector()
+  
+)
+
 server <- function(input, output)
+
+## For build testing
 shinyApp(ui=ui, server = server)
-
-
+runApp()
