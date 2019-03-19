@@ -40,7 +40,8 @@ ui <- fluidPage(theme = shinytheme("cerulean"),
                   
                   # Output:
                   mainPanel(
-                    HTML("lo que sea")
+                    HTML("Here goes the content"),
+                    downloadButton(outputId = "download_data", label = "Download data")
                   )
                 )
 )
