@@ -164,3 +164,16 @@ write.csv(Results.Sample, file = "Tablita.csv",row.names=TRUE, na="")
   > answer = do.call(rbind,allframes)
   > nrow(answer)
   [1] 507
+  
+  ## Converts a windows path to the format that works in R.
+  pathPrep <- function(path = "clipboard") {
+    y <- if (path == "clipboard") {
+      readClipboard()
+    } else {
+      cat("Please enter the path:\n\n")
+      readline()
+    }
+    x <- chartr("\\", "/", y)
+    writeClipboard(x)
+    return(x)
+  }

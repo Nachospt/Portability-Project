@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1553074779829.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3426389099",
+    "id" : "FAA2FA48",
+    "lastKnownWriteTime" : 1553079903,
+    "last_content_update" : 1553079903471,
+    "path" : "C:/Users/a1380/Desktop/Portability Project/server.R",
+    "project_path" : "server.R",
+    "properties" : {
+        "cursorPosition" : "25,1",
+        "scrollLine" : "2"
+    },
+    "relative_order" : 8,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

@@ -1,0 +1,29 @@
+## New ggplot2 graph
+itemstoplot = intersect(which(Porta.2$Operador.Grupo == "Vodafone"),which(Porta.2$ano.mes >= 1805))
+
+ggplot(data = Porta.2[itemstoplot,],
+       aes(y = Importaciones, x = Total.Receptor, color = Donante.Grupo)) +
+  geom_path(arrow = arrow(length=unit(0.30,"cm"), type = "closed")) +
+  geom_label(aes(label = Porta.2[itemstoplot,"ano.mes"]), size = 3)
+
+## Option2 of New ggplot2 graph
+itemstoplot = intersect(which(Porta.2$Operador.Grupo == "Vodafone"),which(Porta.2$ano.mes >= 1805))
+
+ggplot(data = Porta.2[itemstoplot,],
+       aes(y = Importaciones, x = Exportaciones)) +
+  geom_polygon(data = zones, aes(y = Importaciones, x = Exportaciones, group = group), alpha = 0.5, fill = zones$color, color = zones$color, linetype = 0, inherit.aes = FALSE) +
+  geom_point(size=2, aes(colour=Donante.Grupo)) +
+  geom_line(aes(color = Donante.Grupo), arrow = arrow(length=unit(0.30,"cm"), type = "closed")) +
+  geom_text(aes(label = Porta.2[itemstoplot,"ano.mes"], y = Importaciones + 5000), size = 3)
+
+
+## Option3 of New ggplot2 graph
+ggplot(data = Porta.2[itemstoplot,],
+       aes(y = Importaciones, x = Total.Receptor, color = Donante.Grupo)) +
+  geom_segment(data = reshape(DATA, v.names="VALUE", idvar = "NAME", timevar = "YEAR", direction = "wide"),
+               aes(x=VALUE.2011, xend=VALUE.2016, y=NAME, yend=NAME), size = 2,
+               arrow = arrow(length = unit(0.5, "cm")))
+
+## background zones
+  zones = data.frame(c(1,1,1,1,2,2,2,2), c(0, 0, 200000, 0, 200000, 200000, 0, 0), c(0, 200000, 200000, 0, 0, 200000, 0, 0), c("#FD625E", "#FD625E", "#FD625E", "#FD625E", "#66CC00", "#66CC00", "#66CC00", "#66CC00"))
+  colnames(zones) = c("group", "Importaciones", "Exportaciones", "color")
