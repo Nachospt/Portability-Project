@@ -12,10 +12,10 @@
     "path" : "C:/Users/a1380/Desktop/Estadística/R/Scripts preparados/TableAnalysisFunction.R",
     "project_path" : null,
     "properties" : {
-        "cursorPosition" : "53,1",
-        "scrollLine" : "0"
+        "cursorPosition" : "88,20",
+        "scrollLine" : "52"
     },
-    "relative_order" : 3,
+    "relative_order" : 5,
     "source_on_save" : false,
     "source_window" : "",
     "type" : "r_source"

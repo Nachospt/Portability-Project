@@ -11,11 +11,11 @@ itemstoplot = intersect(which(Porta.2$Operador.Grupo == "Vodafone"),which(Porta.
 
 ggplot(data = Porta.2[itemstoplot,],
        aes(y = Importaciones, x = Exportaciones)) +
-  geom_polygon(data = zones, aes(y = Importaciones, x = Exportaciones, group = group), alpha = 0.5, fill = zones$color, color = zones$color, linetype = 0, inherit.aes = FALSE) +
+  geom_polygon(data = zones, aes(y = Importaciones, x = Exportaciones, group = as.factor(group)), alpha = 0.5, fill = zones$color, color = zones$color, linetype = 0, inherit.aes = FALSE) +
   geom_point(size=2, aes(colour=Donante.Grupo)) +
   geom_line(aes(color = Donante.Grupo), arrow = arrow(length=unit(0.30,"cm"), type = "closed")) +
-  geom_text(aes(label = Porta.2[itemstoplot,"ano.mes"], y = Importaciones + 5000), size = 3)
-
+  geom_text(aes(label = Porta.2[itemstoplot,"ano.mes"], y = Importaciones + 5000), size = 3) +
+  scale_color_manual(values = sapply(levels(as.factor(Porta.2[itemstoplot, "Donante.Grupo"])), function(x) switch(x, "Vodafone" = "#E60000", "Movistar" = "#00B6E8", "Masmovil" = "#FFE500", "Orange" = "#FF9800", "Resto" = "#01B8AA")))
 
 ## Option3 of New ggplot2 graph
 ggplot(data = Porta.2[itemstoplot,],
@@ -25,5 +25,5 @@ ggplot(data = Porta.2[itemstoplot,],
                arrow = arrow(length = unit(0.5, "cm")))
 
 ## background zones
-  zones = data.frame(c(1,1,1,1,2,2,2,2), c(0, 0, 200000, 0, 200000, 200000, 0, 0), c(0, 200000, 200000, 0, 0, 200000, 0, 0), c("#FD625E", "#FD625E", "#FD625E", "#FD625E", "#66CC00", "#66CC00", "#66CC00", "#66CC00"))
+  zones = data.frame(c(1,1,1,1,2,2,2,2), c(0, 0, 300000, 0, 300000, 300000, 0, 0), c(0, 300000, 300000, 0, 0, 200000, 0, 0), c("#FD625E", "#FD625E", "#FD625E", "#FD625E", "#66CC00", "#66CC00", "#66CC00", "#66CC00"))
   colnames(zones) = c("group", "Importaciones", "Exportaciones", "color")

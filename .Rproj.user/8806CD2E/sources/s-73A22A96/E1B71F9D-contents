@@ -55,7 +55,10 @@ rowMeans()
 rowsums()
 ## Une por un punto todos los factores de dos listas dando todas las combinaciones.
 interaction(a,b)
-#
+
+## Sustituir elementos
+switch(x, "Vodafone" = "#E60000", "Movistar" = "#00B6E8", "Masmovil" = "#FFE500")
+
 #
 write.csv(Results.Sample, file = "Tablita.csv",row.names=TRUE, na="")
 
