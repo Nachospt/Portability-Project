@@ -1,10 +1,3 @@
-## New ggplot2 graph
-itemstoplot = intersect(which(Porta.2$Operador.Grupo == "Vodafone"),which(Porta.2$ano.mes >= 1805))
-
-ggplot(data = Porta.2[itemstoplot,],
-       aes(y = Importaciones, x = Total.Receptor, color = Donante.Grupo)) +
-  geom_path(arrow = arrow(length=unit(0.30,"cm"), type = "closed")) +
-  geom_label(aes(label = Porta.2[itemstoplot,"ano.mes"]), size = 3)
 
 ## Option2 of New ggplot2 graph
 itemstoplot = intersect(which(Porta.2$Operador.Grupo == "Vodafone"),which(Porta.2$ano.mes >= 1805))
@@ -24,6 +17,17 @@ ggplot(data = Porta.2[itemstoplot,],
                aes(x=VALUE.2011, xend=VALUE.2016, y=NAME, yend=NAME), size = 2,
                arrow = arrow(length = unit(0.5, "cm")))
 
-## background zones
-  zones = data.frame(c(1,1,1,1,2,2,2,2), c(0, 0, 300000, 0, 300000, 300000, 0, 0), c(0, 300000, 300000, 0, 0, 200000, 0, 0), c("#FD625E", "#FD625E", "#FD625E", "#FD625E", "#66CC00", "#66CC00", "#66CC00", "#66CC00"))
-  colnames(zones) = c("group", "Importaciones", "Exportaciones", "color")
+#### cambio dataset
+
+Porta.3 = Porta.1
+
+Porta.3$Importaciones = sapply(Porta.1$Importaciones, function(x) {
+  x = x + runif(1,0,2) * x
+  x
+})
+
+Porta.4 = as.data.table(Porta.3[which(Porta.3$ano.mes == 1804),])
+Porta.4$Referencia = Porta.1[which(Porta.1$ano.mes == 1804),"Importaciones"]
+
+Porta.4[, .( resta = sum(Importaciones)-sum(Referencia), Import = sum(Importaciones), Refer = sum(Referencia)), by = Donante.Grupo]
+

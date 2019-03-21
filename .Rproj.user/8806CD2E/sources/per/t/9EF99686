@@ -1,21 +1,21 @@
 {
     "collab_server" : "",
     "contents" : "",
-    "created" : 1552395175021.000,
+    "created" : 1553163867576.000,
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "0",
-    "id" : "E1B71F9D",
-    "lastKnownWriteTime" : 1553082093,
-    "last_content_update" : 1553082093020,
+    "hash" : "1999226157",
+    "id" : "9EF99686",
+    "lastKnownWriteTime" : 1553173108,
+    "last_content_update" : 1553173108032,
     "path" : "C:/Users/a1380/Desktop/Estadística/R/Scripts preparados/Funciones básicas.R",
     "project_path" : null,
     "properties" : {
-        "cursorPosition" : "61,1",
-        "scrollLine" : "46"
+        "cursorPosition" : "211,2",
+        "scrollLine" : "193"
     },
-    "relative_order" : 1,
+    "relative_order" : 8,
     "source_on_save" : false,
     "source_window" : "",
     "type" : "r_source"

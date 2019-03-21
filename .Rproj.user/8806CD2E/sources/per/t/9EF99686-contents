@@ -53,6 +53,11 @@ options(scipen=999)
 ## Calculos sumas o medias de los elementos de una matriz
 rowMeans()
 rowsums()
+
+# Unique values
+uniqueN()
+uniqueN(x, by = "column") # Eligiendo columna
+
 ## Une por un punto todos los factores de dos listas dando todas las combinaciones.
 interaction(a,b)
 
@@ -180,3 +185,31 @@ write.csv(Results.Sample, file = "Tablita.csv",row.names=TRUE, na="")
     writeClipboard(x)
     return(x)
   }
+  
+  ## Data.table (easier and faster than operating with data frames)
+  # Filtering
+  table[3:4] # Filtering, even if it has many columns.
+  table[.N] # Last row.
+  table[.N-10] # Last row -10.
+  table[variable == "anything"] # Subset rows by column value.
+  table[variable %like% "^Madrid"] # %like% means it contains Pattern. ^ specifies pattern must be at the beggining of the string.
+  table[variable %like% "Madrid$"] # %like% means it contains Pattern. $ specifies pattern must be at the end of the string.
+  table[variable %between% c(2000, 3000)] # Between filtering. Internally optimized to run in parallel. Not like argument1 & argument2.
+  table[variable %chin% c("a", "b")] # Like %in% but internally optimized.
+  table[, list(var1, name = var2)] # You can change names. No "" needed.
+  table[, .(var1, name = var2)] ## Abreviation
+  table[,"var1"] # Returns a data.table
+  table[,var1] # Returns a vector, not like list(var1)
+  table[, list(meanvar1 = mean(var1))] # list() to preserve the data.table when 1 column selected.
+  table[,hist(var1)] ## you can perform calculations on the j part.
+  table[, .N, by = var1] # Nrow per group.
+  table[, .N, by = .(var1, var2)] # Nrow per group combination.
+  table[, meanvar1 = var1][order(meanvar1)][1:3] # Chaining. I.E: average of top 3 elements.
+  table[order(var1),var1[c(1,.N)], by = var2] # Keeping first and last element of var1 numeric by var2. 
+  # .SD (Subset of Data) returns all the table except the grouping column
+  table[, .SD[1], by = var1] # I.E: this returns first row of each group.
+  table[, .SD[1], by = var1, .SDcols = -c("var1", "var2")] # .SDcols arguments Returns all columns but these ones.
+  
+  
+  
+  
