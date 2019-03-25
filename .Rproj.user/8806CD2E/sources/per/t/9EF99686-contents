@@ -70,12 +70,12 @@ write.csv(Results.Sample, file = "Tablita.csv",row.names=TRUE, na="")
 ## Exploring the functions in a package
 ## R provides useful ways of exploring the functions of the R packages, If, for example, we wanted to list all functions in a specific package we would use a function similar to this:
   
-  lsp <- function(package, all.names = FALSE, pattern) 
+  lsp <- function(package, all.names = FALSE, pattern)
   {
     package <- deparse(substitute(package))
     ls(
-      pos = paste("package", package, sep = ":"), 
-      all.names = all.names, 
+      pos = paste("package", package, sep = ":"),
+      all.names = all.names,
       pattern = pattern
     )
   }
@@ -110,7 +110,7 @@ write.csv(Results.Sample, file = "Tablita.csv",row.names=TRUE, na="")
   pre.temp <- pre.temp[,sapply(pre.temp, is.numeric)]
 
 ## Apply a function to each cell of a ragged array, that is to each (non-empty) group of values given by a unique combination of the levels of certain factors. 
-  tapply(ingresos,list(FactorEstado,Sex), mean) 
+  tapply(ingresos,list(FactorEstado,Sex), mean)
   
 ## Evaluating object size
   format(object.size(DF.3), units = "MB")
@@ -124,10 +124,10 @@ write.csv(Results.Sample, file = "Tablita.csv",row.names=TRUE, na="")
   
 ## SVM Support vector machines
   library(e1071)
-  svm_model<- svm(y ~ ., 
-                  data = trainset, 
-                  type = "C-classification", 
-                  kernel = "linear", 
+  svm_model<- svm(y ~ .,
+                  data = trainset,
+                  type = "C-classification",
+                  kernel = "linear",
                   scale = FALSE)
   svm_model$SV
   svm_model$index
@@ -209,7 +209,7 @@ write.csv(Results.Sample, file = "Tablita.csv",row.names=TRUE, na="")
   # .SD (Subset of Data) returns all the table except the grouping column
   table[, .SD[1], by = var1] # I.E: this returns first row of each group.
   table[, .SD[1], by = var1, .SDcols = -c("var1", "var2")] # .SDcols arguments Returns all columns but these ones.
-  
+  table[, newvar := var1 * 2] # Create a reference column that occupies nearly no space.
   
   
   

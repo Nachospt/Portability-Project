@@ -22,12 +22,25 @@ ggplot(data = Porta.2[itemstoplot,],
 Porta.3 = Porta.1
 
 Porta.3$Importaciones = sapply(Porta.1$Importaciones, function(x) {
-  x = x + runif(1,0,2) * x
+  x = x + x * runif(1,0,2) 
   x
 })
 
 Porta.4 = as.data.table(Porta.3[which(Porta.3$ano.mes == 1804),])
 Porta.4$Referencia = Porta.1[which(Porta.1$ano.mes == 1804),"Importaciones"]
 
-Porta.4[, .( resta = sum(Importaciones)-sum(Referencia), Import = sum(Importaciones), Refer = sum(Referencia)), by = Donante.Grupo]
+Porta.5 = Porta.4
+Porta.5_F = function(x) {x %>%
+  .[, .( resta = sum(Importaciones)-sum(Referencia), Import = sum(Importaciones), Refer = sum(Referencia)), by = list(ano.mes, Operador.Grupo)]}
 
+for  (z in levels(as.factor(Porta.5$ano.mes))) {
+  for (i in levels(Porta.5$Operador.Grupo)) {
+    print(i)
+    print(z)
+    if (abs(Porta.5_F(Porta.5[ano.mes == as.numeric(z)])[i,resta]) > 2)
+    { Porta.5[,by= ano.mes, on= as.numeric(z)][Operador.Grupo == i, "Importaciones"] = Porta.5[ano.mes == as.numeric(z)][Operador.Grupo == i, "Importaciones"] * Porta.5_F(Porta.5[ano.mes == as.numeric(z)])[Operador.Grupo == i,Refer/Import]}
+
+  }
+}
+
+View(cbind(Porta.4 = as.data.table(Porta.3[which(Porta.3$ano.mes == 1804),]), Porta.5))
