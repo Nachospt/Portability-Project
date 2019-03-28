@@ -22,11 +22,11 @@ ggplot(data = Porta.2[itemstoplot,],
 Porta.3 = Porta.1
 
 Porta.3$Importaciones = sapply(Porta.1$Importaciones, function(x) {
-  x = x + x * runif(1,0,2) 
+  x = x + x * runif(1,0,2)
   x
 })
 
-Porta.4 = as.data.table(Porta.3[which(Porta.3$ano.mes == 1804),])
+Porta.4 = as.data.table(Porta.3)
 Porta.4$Referencia = Porta.1[which(Porta.1$ano.mes == 1804),"Importaciones"]
 
 Porta.5 = Porta.4
@@ -37,10 +37,46 @@ for  (z in levels(as.factor(Porta.5$ano.mes))) {
   for (i in levels(Porta.5$Operador.Grupo)) {
     print(i)
     print(z)
-    if (abs(Porta.5_F(Porta.5[ano.mes == as.numeric(z)])[i,resta]) > 2)
-    { Porta.5[,by= ano.mes, on= as.numeric(z)][Operador.Grupo == i, "Importaciones"] = Porta.5[ano.mes == as.numeric(z)][Operador.Grupo == i, "Importaciones"] * Porta.5_F(Porta.5[ano.mes == as.numeric(z)])[Operador.Grupo == i,Refer/Import]}
-
+    if (abs(Porta.5_F(Porta.5[ano.mes == z,])[Operador.Grupo == i,resta]) > 2)
+    { Porta.5[ano.mes == z,][Operador.Grupo == i, "Importaciones" ] = Porta.5[ano.mes == z,][Operador.Grupo == i, "Importaciones"] * Porta.5_F(Porta.5[ano.mes == z,])[Operador.Grupo == i, Refer/Import]}
   }
 }
 
-View(cbind(Porta.4 = as.data.table(Porta.3[which(Porta.3$ano.mes == 1804),]), Porta.5))
+View(cbind(Porta.3, Porta.5))
+
+## CNMC data
+
+Pr_1 = fread("C:\\Users\\a1380\\Desktop\\Portability Project\\9. Portabilidades de numeración móvil.csv",skip = 4)
+colnames(Pr_1)[2] = "Grupo.Operador"
+Pr_1[, V1 := NULL]
+Pr_1 = Pr_1[9:14,][Grupo.Operador %in% c("Movistar", "Vodafone", "Orange", "Grupo MASMOV!L", "OMV"),]
+
+##  
+colnames(Pr_1)[2:length(colnames(Pr_1))] = colnames(Pr_1)[2:length(colnames(Pr_1))] %>%
+  substring(1,3) %>%
+  sapply(.,function(x) do.call("switch", as.list(c(x,"Ene" = "01","Feb" = "02", "Mar" = "03", "Abr" = "04", "May" = "05", "Jun" = "06", "Jul" = "07", "Ago" = "08", "Sep" = "09", "Oct" = "10", "Nov" = "11", "Dic" = "12")))) %>%
+  paste(substring(colnames(Pr_1)[2:length(colnames(Pr_1))], 7, 8), sep = "",.)
+
+## Pivoting year columns
+Pr_1 <- melt(Pr_1, id=c("Grupo.Operador"))
+colnames(Pr_1)[2] = "ano.mes"
+
+## Selecting recent data
+Pr_1 = Pr_1[as.numeric(as.character(ano.mes)) > 1609,]
+
+write.csv(Pr_1, file = "Sim_data.csv",row.names=FALSE, na="")
+
+## Simulation starting data
+
+Pr_0 = data.table(
+  c(rep("Movistar",5),
+    rep("Vodafone",5),
+    rep("Orange",5),
+    rep("Grupo MASMOV!L",5),
+    rep("OMV",5)),
+  c(rep(c("Movistar", "Vodafone", "Orange", "Grupo MASMOV!L", "OMV"), 5)),
+  c(1, 6, 5, 7, 2,
+    1, 6, 5, 7, 2,) ## WIP
+)
+
+

@@ -1,6 +1,6 @@
 server <- function(input, output) {
-  Upd.Porta.1 <- reactive({filter(Porta.1, Operador.Grupo == input$Operator & ano.mes >= input$MinYear)}) 
-  Upd.Porta.2 <- reactive({filter(Porta.2, Operador.Grupo == input$Operator & ano.mes >= input$MinYear)}) 
+  Upd.Pr_1 <- reactive({filter(Pr_1, Operador.Grupo == input$Operator & ano.mes >= input$MinYear)}) 
+  Upd.Pr_2 <- reactive({filter(Pr_2, Operador.Grupo == input$Operator & ano.mes >= input$MinYear)}) 
   
   filetype = "csv"
   output$download_data <- downloadHandler(
@@ -9,25 +9,34 @@ server <- function(input, output) {
     },
     content = function(file) {
       if(filetype == "csv"){
-        write_csv(Upd.Porta.1(), path = file)
+        write_csv(Upd.Pr_1(), path = file)
       }
     }
   )
   
   output$description <- renderText({
-    paste0(nrow(Upd.Porta.1()))})
+    paste0(nrow(Upd.Pr_1()))})
   
   # Create scatterplot object the plotOutput function is expecting
   output$scatterplot <- renderPlot({
-    ggplot(data = Upd.Porta.2(),
+    ggplot(data = Upd.Pr_2(),
            aes(y = Importaciones, x = Exportaciones)) +
       geom_polygon(data = zones, aes(y = Importaciones, x = Exportaciones, group = as.factor(group)), alpha = 0.5, fill = zones$color, color = zones$color, linetype = 0, inherit.aes = FALSE) +
       geom_point(size = 2, aes(colour = Donante.Grupo)) +
       geom_line(aes(color = Donante.Grupo), arrow = arrow(length=unit(0.30,"cm"), type = "closed")) +
-      geom_text(aes(label = Upd.Porta.2()[,"ano.mes"], y = Importaciones + 5000), size = 3, color = "grey29") +
-      scale_color_manual(values = sapply(levels(as.factor(Upd.Porta.2()[, "Donante.Grupo"])), function(x) switch(x, "Vodafone" = "#E60000", "Movistar" = "#00B6E8", "Masmovil" = "#FFE500", "Orange" = "#FF9800", "Resto" = "#01B8AA")))
+      geom_text(aes(label = Upd.Pr_2()[,"ano.mes"], y = Importaciones + 5000), size = 3, color = "grey29") +
+      scale_color_manual(values = sapply(levels(as.factor(Upd.Pr_2()[, "Donante.Grupo"])), function(x) switch(x, "Vodafone" = "#E60000", "Movistar" = "#00B6E8", "Masmovil" = "#FFE500", "Orange" = "#FF9800", "Resto" = "#01B8AA"))) +
+      coord_cartesian(xlim = c(0, max(Upd.Pr_2()[,c("Importaciones", "Exportaciones")]) * 1.04), ylim = c(0, max(Upd.Pr_2()[,c("Importaciones", "Exportaciones")]) * 1.04))
   })
   
-  # Create rawtable object the plotOutput function is expecting
-  output$rawtable <- DT::renderDataTable({DT::datatable(Upd.Porta.1(), options = list(pageLength = 10))})#renderTable({Porta.1})
+  #Operator images
+
+  output$Op1 <- renderImage({list(src = if(input$Operator == "Vodafone") {"www/VODAFONE.png"} else {"www/VODAFONE_LIGHT.png"}, contentType = 'image/png', width = 100)}, deleteFile = FALSE)
+  output$Op2 <- renderImage({list(src = if(input$Operator == "Movistar") {"www/MOVISTAR.png"} else {"www/MOVISTAR_LIGHT.png"}, contentType = 'image/png', width = 100)}, deleteFile = FALSE)
+  output$Op3 <- renderImage({list(src = if(input$Operator == "Orange") {"www/ORANGE.png"} else {"www/ORANGE_LIGHT.png"}, contentType = 'image/png', width = 100)}, deleteFile = FALSE)
+  output$Op4 <- renderImage({list(src = if(input$Operator == "Masmovil") {"www/MASMOVIL.png"} else {"www/MASMOVIL_LIGHT.png"}, contentType = 'image/png', width = 100)}, deleteFile = FALSE)
+  output$Op5 <- renderImage({list(src = if(input$Operator == "Resto") {"www/RESTO.png"} else {"www/RESTO_LIGHT.png"}, contentType = 'image/png', width = 100)}, deleteFile = FALSE)
+  
+  #Create rawtable object the plotOutput function is expecting
+  output$rawtable <- DT::renderDataTable({DT::datatable(Upd.Pr_1(), options = list(pageLength = 10))}) #renderTable({Pr_1})
 }
