@@ -50,7 +50,9 @@ rsconnect::deployApp("C:/Users/a1380/Desktop/Portability Project")
 Pr_2 = Pr_1
 
 Pr_2$Exportaciones = apply(Pr_1, 1, FUN = function(x) {
-  TargetRow = intersect(which(Pr_1$Donante.Grupo == x["Operador.Grupo"]), intersect(which(Pr_1$Operador.Grupo == x["Donante.Grupo"]), which(Pr_1$ano.mes == x["ano.mes"])))
+  TargetRow = intersect(which(Pr_1$Donante.Grupo == x["Operador.Grupo"]),
+                        intersect(which(Pr_1$Operador.Grupo == x["Donante.Grupo"]),
+                                  which(Pr_1$ano.mes == x["ano.mes"])))
   Pr_1$Importaciones[TargetRow]
 })
 
@@ -63,7 +65,9 @@ Pr_2 = Pr_2[-which(Pr_2$Donante.Grupo == Pr_2$Operador.Grupo),]
 
 options(scipen=999)
 
-zones = data.frame(c(1,1,1,1,2,2,2,2), c(0, 0, 300000, 0, 300000, 300000, 0, 0), c(0, 300000, 300000, 0, 0, 300000, 0, 0), c("#FD625E", "#FD625E", "#FD625E", "#FD625E", "#66CC00", "#66CC00", "#66CC00", "#66CC00"))
+zones = data.frame(c(1,1,1,1,2,2,2,2), c(0, 0, 300000, 0, 300000, 300000, 0, 0),
+                   c(0, 300000, 300000, 0, 0, 300000, 0, 0),
+                   c("#FD625E", "#FD625E", "#FD625E", "#FD625E", "#66CC00", "#66CC00", "#66CC00", "#66CC00"))
 colnames(zones) = c("group", "Importaciones", "Exportaciones", "color")
 
 ## 4.2 ui and server
@@ -109,7 +113,8 @@ ui <- fluidPage(theme = shinytheme("cerulean"),
                                         tabPanel(title = "Overview",
                                                  h3("Overview"),
                                                  br(),
-                                                 HTML("Here goes the content")),
+                                                 HTML("Here goes the content"),
+                                                 plotOutput(outputId = "waterfall")),
                                         tabPanel(title = "Portability Graph",
                                                  h3("Portability graph"),
                                                  br(),
@@ -131,8 +136,17 @@ ui <- fluidPage(theme = shinytheme("cerulean"),
 )
 
 server <- function(input, output) {
-  Upd.Pr_1 <- reactive({filter(Pr_1, Operador.Grupo == input$Operator & ano.mes >= input$MinYear)}) 
-  Upd.Pr_2 <- reactive({filter(Pr_2, Operador.Grupo == input$Operator & ano.mes >= input$MinYear)}) 
+  Upd.Pr_1 <- reactive({filter(Pr_1, Operador.Grupo == input$Operator & ano.mes >= input$MinYear)})
+  Upd.Pr_2 <- reactive({filter(Pr_2, Operador.Grupo == input$Operator & ano.mes >= input$MinYear)})
+  Upd.Pr_Waterfall <- reactive({Upd.Pr_2[, .( Import = sum(Importaciones),
+                                             Export = sum(Exportaciones)),
+                                        by = list(ano.mes, Operador.Grupo)] %>%
+                                 .[,"end":= cumsum(Upd.Pr_2$Import - Upd.Pr_2$Export)] %>%
+                                 .[,"start" := c(0, Upd.Pr_2[1:(.N-2), end], 0)]  %>%
+                                 .[, "id" := 1:.N] %>%
+                                 .[,"sign" := {if(Import - Export >= 0) {"b"} else {"a"}}, by = id] %>%
+                                 .[c(1, .N),"sign" := "c"]
+  })
   
   filetype = "csv"
   output$download_data <- downloadHandler(
@@ -157,12 +171,18 @@ server <- function(input, output) {
       geom_point(size = 2, aes(colour = Donante.Grupo)) +
       geom_line(aes(color = Donante.Grupo), arrow = arrow(length=unit(0.30,"cm"), type = "closed")) +
       geom_text(aes(label = Upd.Pr_2()[,"ano.mes"], y = Importaciones + 5000), size = 3, color = "grey29") +
-      scale_color_manual(values = sapply(levels(as.factor(Upd.Pr_2()[, "Donante.Grupo"])), function(x) switch(x, "Vodafone" = "#E60000", "Movistar" = "#00B6E8", "Masmovil" = "#FFE500", "Orange" = "#FF9800", "Resto" = "#01B8AA"))) +
+      scale_color_manual(values = sapply(levels(as.factor(Upd.Pr_2()[, "Donante.Grupo"])),
+                                         function(x) switch(x, "Vodafone" = "#E60000", "Movistar" = "#00B6E8", "Masmovil" = "#FFE500", "Orange" = "#FF9800", "Resto" = "#01B8AA"))) +
       coord_cartesian(xlim = c(0, max(Upd.Pr_2()[,c("Importaciones", "Exportaciones")]) * 1.04), ylim = c(0, max(Upd.Pr_2()[,c("Importaciones", "Exportaciones")]) * 1.04))
   })
   
-  #Operator images
+  # Create waterfall object the plotOutput function is expecting
+  output$waterfall <- renderPlot({ggplot(data = Upd.Pr_Waterfall(),
+                                         aes(Importaciones - Exportaciones)) +
+      geom_rect(aes(xmin = id - 0.45, xmax = id + 0.45, ymin = end, ymax = start))
+  })
   
+  #Operator images
   output$Op1 <- renderImage({list(src = if(input$Operator == "Vodafone") {"www/VODAFONE.png"} else {"www/VODAFONE_LIGHT.png"}, contentType = 'image/png', width = 100)}, deleteFile = FALSE)
   output$Op2 <- renderImage({list(src = if(input$Operator == "Movistar") {"www/MOVISTAR.png"} else {"www/MOVISTAR_LIGHT.png"}, contentType = 'image/png', width = 100)}, deleteFile = FALSE)
   output$Op3 <- renderImage({list(src = if(input$Operator == "Orange") {"www/ORANGE.png"} else {"www/ORANGE_LIGHT.png"}, contentType = 'image/png', width = 100)}, deleteFile = FALSE)
