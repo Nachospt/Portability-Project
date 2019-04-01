@@ -80,10 +80,10 @@ Pr_0 = data.table(
 )
 
 ## Gráfico cascada
-Pr_X = Porta.5_F(Pr_2[Operador.Grupo == "Vodafone"])
+Pr_X = Porta_F(Pr_2[Operador.Grupo == "Vodafone"])
 Pr_X[,"end":= cumsum(Pr_X$Import - Pr_X$Export)][,"start" := c(0, Pr_X[1:(.N-2), end], 0)]
 Pr_X[, "id" := 1:.N][,"sign" := {if(Import - Export >= 0) {"b"} else {"a"}}, by = id][c(1, .N),"sign" := "c"]
-ggplot(Pr_X, aes(id, fill = sign))+ 
+ggplot(Pr_X, aes(id, fill = sign)) + 
   geom_rect(aes(xmin = id - 0.45, xmax = id + 0.45, ymin = end, ymax = start))
 
 filter(Pr_2, Operador.Grupo == input$Operator & ano.mes >= input$MinYear)[, list(Import = sum("Importaciones"),

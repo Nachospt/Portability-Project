@@ -1,11 +1,10 @@
 server <- function(input, output) {
   Upd.Pr_1 <- reactive({filter(Pr_1, Operador.Grupo == input$Operator & ano.mes >= input$MinYear)})
   Upd.Pr_2 <- reactive({filter(Pr_2, Operador.Grupo == input$Operator & ano.mes >= input$MinYear)})
-  Upd.Pr_Waterfall <- reactive({filter(Pr_2, Operador.Grupo == input$Operator & ano.mes >= input$MinYear)[, list(Import = sum("Importaciones"),
-                                              Export = sum("Exportaciones"),
-                                              by = ano.mes)][,"end":= cumsum(Upd.Pr_2$Import - Upd.Pr_2$Export)][,"start" := c(0, Upd.Pr_2[1:(.N-2), end], 0)][, "id" := 1:.N][,"sign" := {if(Import - Export >= 0) {"b"} else {"a"}}, by = id][c(1, .N),"sign" := "c"]
-  })
-  
+  Upd.Pr_Waterfall <- reactive({Pr_Waterfall = as.data.table(Upd.Pr_2())
+  Pr_Waterfall = Pr_Waterfall[, list(Import = sum(Importaciones), Export = sum(Exportaciones)), by = list(ano.mes, Operador.Grupo)][,"end":= cumsum(Import - Export)]
+  Pr_Waterfall[,"start" := c(0, Pr_Waterfall[1:(.N-2), end], 0)][, "id" := 1:.N][,"sign" := {if(Import - Export >= 0) {"b"} else {"a"}}, by = id][c(1, .N),"sign" := "c"]
+    })
   filetype = "csv"
   output$download_data <- downloadHandler(
     filename = function() {
@@ -35,8 +34,7 @@ server <- function(input, output) {
   })
   
   # Create waterfall object the plotOutput function is expecting
-  output$waterfall <- renderPlot({ggplot(data = Upd.Pr_Waterfall(),
-                                         aes(Import - Export)) +
+  output$waterfall <- renderPlot({ggplot(Upd.Pr_Waterfall(), aes(id, fill = sign)) + 
       geom_rect(aes(xmin = id - 0.45, xmax = id + 0.45, ymin = end, ymax = start))
   })
   
