@@ -88,6 +88,7 @@ p4 +
                          labels = c(1971, 1994, 2013),
                          low = "blue", high = "red")
 ## Colores palidos
+library(scales)
 p4 +
   scale_color_continuous(name="",
                          breaks = c(19751, 19941, 20131),
@@ -152,10 +153,8 @@ s + geom_point(aes(shape = z), size = 4, colour = "Red", fill = "Black") +
 ## Remove scientific notation
 scale_fill_continuous(label=comma)
 
-
-
 ##Gr?fico t?picos
-library(ggplot2) 
+library(ggplot2)
 
 # create factors with value labels 
 mtcars$gear <- factor(mtcars$gear,levels=c(3,4,5),

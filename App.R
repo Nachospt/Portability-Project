@@ -29,6 +29,7 @@ library(shiny)
 library(shinythemes)
 library(rsconnect)
 library(DT)
+library(scales)
 
 # 1.2 Data Load
 setwd("C:\\Users\\a1380\\Desktop\\Portability Project")
@@ -173,7 +174,7 @@ server <- function(input, output) {
   # Create waterfall object the plotOutput function is expecting
   output$waterfall <- renderPlot({ggplot(Upd.Pr_Waterfall(), aes(id, fill = sign)) + 
       geom_rect(aes(xmin = id - 0.45, xmax = id + 0.45, ymin = end, ymax = start))
-  })
+  }, height = 200)
   
   #Operator images
   output$Op1 <- renderImage({list(src = if(input$Operator == "Vodafone") {"www/VODAFONE.png"} else {"www/VODAFONE_LIGHT.png"}, contentType = 'image/png', width = 100)}, deleteFile = FALSE)

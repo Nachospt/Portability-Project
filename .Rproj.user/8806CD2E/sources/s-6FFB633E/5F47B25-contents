@@ -8,6 +8,11 @@ ui <- fluidPage(theme = shinytheme("cerulean"),
                   
                   # Inputs
                   sidebarPanel( width = 3,
+                                h5(imageOutput("Op1", inline = TRUE),
+                                   imageOutput("Op2", inline = TRUE),
+                                   imageOutput("Op3", inline = TRUE),
+                                   imageOutput("Op4", inline = TRUE),
+                                   imageOutput("Op5", inline = TRUE)),
                                 
                                 h3("Selection"),      # Third level header: Selection
                                 
@@ -37,25 +42,22 @@ ui <- fluidPage(theme = shinytheme("cerulean"),
                   # Output:
                   mainPanel(tabsetPanel(type = "tabs",
                                         tabPanel(title = "Overview",
-                                                 h3("Overview"),
-                                                 br(),
-                                                 HTML("Here goes the content"),
-                                                 plotOutput(outputId = "waterfall")),
-                                        tabPanel(title = "Portability Graph",
-                                                 h3("Portability graph"),
-                                                 br(),
-                                                 h5(imageOutput("Op1", width = "10%", height = "10%", inline = TRUE),
-                                                    imageOutput("Op2", width = "10%", height = "10%", inline = TRUE),
-                                                    imageOutput("Op3", width = "10%", height = "10%", inline = TRUE),
-                                                    imageOutput("Op4", width = "10%", height = "10%", inline = TRUE),
-                                                    imageOutput("Op5", width = "10%", height = "10%", inline = TRUE)),
-                                                 plotOutput(outputId = "scatterplot"),
-                                                 textOutput(outputId = "description")),
+                                                 HTML("In this dashboard we show an advanced visualization on portability operations data.
+                                                      Portability data is still being analyzed with tables like this:"),
+                                                 tableOutput(outputId = "ClassicTable")
+                                                 ),
+                                        tabPanel(title = "Portability Analysis",
+                                                 h5("Waterfall graph", inline = TRUE),
+                                                 h5(plotOutput(outputId = "waterfall", height = 180, width = 500)),
+                                                 h5("Portability Evolution Map"),
+                                                 plotOutput(outputId = "scatterplot")),
                                         tabPanel(title = "Raw table",
                                                  h3("Raw Table"),
                                                  br(),
                                                  DT::dataTableOutput(outputId = "rawtable"), #tableOutput(outputId = "rawtable"),
-                                                 downloadButton(outputId = "download_data", label = "Download data"))
+                                                 downloadButton(outputId = "download_data", label = "Download data"),
+                                                 br(),
+                                                 br())
                   )
                   )
                 )
