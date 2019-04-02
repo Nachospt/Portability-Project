@@ -5,15 +5,15 @@
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "0",
+    "hash" : "1344214195",
     "id" : "9EF99686",
-    "lastKnownWriteTime" : 1553776919,
-    "last_content_update" : 1553776919570,
+    "lastKnownWriteTime" : 1554198472,
+    "last_content_update" : 1554198472457,
     "path" : "C:/Users/a1380/Desktop/Estadística/R/Scripts preparados/Funciones básicas.R",
     "project_path" : null,
     "properties" : {
-        "cursorPosition" : "64,3",
-        "scrollLine" : "0"
+        "cursorPosition" : "227,32",
+        "scrollLine" : "207"
     },
     "relative_order" : 7,
     "source_on_save" : false,

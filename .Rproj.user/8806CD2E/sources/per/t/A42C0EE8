@@ -5,15 +5,15 @@
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "0",
+    "hash" : "1100491331",
     "id" : "A42C0EE8",
-    "lastKnownWriteTime" : 1554126683,
-    "last_content_update" : 1554126683985,
+    "lastKnownWriteTime" : 1554193005,
+    "last_content_update" : 1554193005809,
     "path" : "C:/Users/a1380/Desktop/Portability Project/App.R",
     "project_path" : "App.R",
     "properties" : {
-        "cursorPosition" : "39,0",
-        "scrollLine" : "32"
+        "cursorPosition" : "50,11",
+        "scrollLine" : "0"
     },
     "relative_order" : 1,
     "source_on_save" : false,

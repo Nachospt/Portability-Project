@@ -10,6 +10,7 @@ Attributes()
 Attr()
 rbind(head(), tail())
 Summary() ## Descripci?n de datos de matriz o tabla
+str() ## show the types of columns
 
 ## Efficient increasing functions
 #Remove unnecessary objects
@@ -23,6 +24,7 @@ time.taken
 
 # Check object disk storage
 print(object.size(), units="Mb")
+tables() ## gives all tables, with columns and the space they occupy in memory.
 
 #colclasses argument: define the column types so R doesnt need to check whole table (useful for large tables)
 read.table(M, colClasses = classes)
@@ -221,4 +223,15 @@ write.csv(Results.Sample, file = "Tablita.csv",row.names=TRUE, na="")
   table[,newvar := {if (var1 > 5) "high" else "low", by = .(var2)}] # Conditions (by is necessary)
   fread("https://bit.ly/2RkBXhV") # Import data. Guesses types.
   fread(, nrows = 1, skip = 2)
+  
+  ## Data.table JOINS
+  table1[table2, on = .(keyvar)]
+  
+  # Normal data.frame JOINS
+  merge(x = table1, y = table2, by= "var") ## Inner Join
+  merge(x = table1, y = table2, by.x = "var1", by.y = "var2")
+  merge(x = table1, y = table2, by= "var", all = T) ## Full Join
+  merge(x = table1, y = table2, by= "var", all.x = T) ## Left / Right Join
+  
+  
   

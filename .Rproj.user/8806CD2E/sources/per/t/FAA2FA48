@@ -5,15 +5,15 @@
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "0",
+    "hash" : "931285096",
     "id" : "FAA2FA48",
-    "lastKnownWriteTime" : 1554133277,
-    "last_content_update" : 1554133277688,
+    "lastKnownWriteTime" : 1554192867,
+    "last_content_update" : 1554192867369,
     "path" : "C:/Users/a1380/Desktop/Portability Project/server.R",
     "project_path" : "server.R",
     "properties" : {
-        "cursorPosition" : "58,73",
-        "scrollLine" : "11"
+        "cursorPosition" : "25,66",
+        "scrollLine" : "0"
     },
     "relative_order" : 3,
     "source_on_save" : false,

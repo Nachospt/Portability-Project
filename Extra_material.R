@@ -69,6 +69,7 @@ write.csv(Pr_1, file = "Sim_data.csv",row.names=FALSE, na="")
 ## Simulation starting data
 
 Pr_0 = data.table(
+  c(rep(1804,25)),
   c(rep("Movistar",5),
     rep("Vodafone",5),
     rep("Orange",5),
@@ -76,8 +77,15 @@ Pr_0 = data.table(
     rep("OMV",5)),
   c(rep(c("Movistar", "Vodafone", "Orange", "Grupo MASMOV!L", "OMV"), 5)),
   c(1, 6, 5, 7, 2,
-    1, 6, 5, 7, 2,) ## WIP
-)
+    4, 2, 7, 2, 3,
+    6, 4, 2, 4, 3,
+    8, 8, 7, 1, 2,
+    5, 4, 5, 4, 5
+    )
+) ## WIP
+colnames(Pr_0) <- c("ano.mes","Operador.Grupo", "Donante.Grupo", "Importaciones")
+Pr_0A = merge(Pr_0, Pr_1, by = "Join")[,c()]
+
 
 ## Gráfico cascada
 Pr_X = Porta_F(Pr_2[Operador.Grupo == "Vodafone"])
@@ -89,4 +97,3 @@ ggplot(Pr_X, aes(id, fill = sign)) +
 filter(Pr_2, Operador.Grupo == input$Operator & ano.mes >= input$MinYear)[, list(Import = sum("Importaciones"),
                                                                                  Export = sum("Exportaciones"),
                                                                                  by = ano.mes)][,"end":= cumsum(Upd.Pr_2$Import - Upd.Pr_2$Export)][,"start" := c(0, Upd.Pr_2[1:(.N-2), end], 0)][, "id" := 1:.N][,"sign" := {if(Import - Export >= 0) {"b"} else {"a"}}, by = id][c(1, .N),"sign" := "c"]
-
