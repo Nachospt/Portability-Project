@@ -73,9 +73,9 @@ Pr_0 = data.table(
   c(rep("Movistar",5),
     rep("Vodafone",5),
     rep("Orange",5),
-    rep("Grupo MASMOV!L",5),
-    rep("OMV",5)),
-  c(rep(c("Movistar", "Vodafone", "Orange", "Grupo MASMOV!L", "OMV"), 5)),
+    rep("Masmovil",5),
+    rep("Resto",5)),
+  c(rep(c("Movistar", "Vodafone", "Orange", "Masmovil", "Resto"), 5)),
   c(1, 6, 5, 7, 2,
     4, 2, 7, 2, 3,
     6, 4, 2, 4, 3,
@@ -84,7 +84,9 @@ Pr_0 = data.table(
     )
 ) ## WIP
 colnames(Pr_0) <- c("ano.mes","Operador.Grupo", "Donante.Grupo", "Importaciones")
-Pr_0A = merge(Pr_0, Pr_1, by = "Join")[,c()]
+Pr_0A = merge(Pr_0, Pr_1, by = "Join")
+Pr_0[Pr_1, on = .(ano.mes, Operador.Grupo, Donante.Grupo)]
+
 
 
 ## Gráfico cascada

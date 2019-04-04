@@ -24,7 +24,7 @@ time.taken
 
 # Check object disk storage
 print(object.size(), units="Mb")
-tables() ## gives all tables, with columns and the space they occupy in memory.
+tables() ## gives all data.tables, with columns and the space they occupy in memory.
 
 #colclasses argument: define the column types so R doesnt need to check whole table (useful for large tables)
 read.table(M, colClasses = classes)
@@ -204,7 +204,7 @@ write.csv(Results.Sample, file = "Tablita.csv",row.names=TRUE, na="")
   table[,var1]  # Returns a vector, not like list(var1)
   table[, list(meanvar1 = mean(var1))] # list() to preserve the data.table when 1 column selected.
   table[,hist(var1)]  ## you can perform calculations on the j part.
-  table[, .N, by = var1]  # Nrow per group.
+  table[, .N, by = var1]  # Column called "N" with the Nrow per group.
   table[, .N, by = .(var1 = newname1, var2)] # Nrow per group combination.Assigning new name is optional.
   table[, meanvar1 = var1][order(meanvar1)][1:3]  # Chaining. I.E: average of top 3 elements.
   table[order(var1),var1[c(1,.N)], by = var2] # Keeping first and last element of var1 numeric by var2. 
@@ -225,13 +225,26 @@ write.csv(Results.Sample, file = "Tablita.csv",row.names=TRUE, na="")
   fread(, nrows = 1, skip = 2)
   
   ## Data.table JOINS
-  table1[table2, on = .(keyvar)]
+  table1[table2, on = .(key1, key2)] ## Left Join
+  table1[table2, on = .(key1, key2), nomatch = 0] ## Inner Join
+  table1[!table2, on = .(key1)] ## Anti Join
+  ## Full Join not possible with data.table syntax
+  table1[table2, on = .(key1 = key2)] ## Different variable name
+  
+  table1[table2, on = .(key1), countvar = .N, by = .EACHI] ## Operates for each element in the first table
+  
+  ## Setting key previously
+  setkey(table1, key1, key2, key3) 
+  table1[table2] ## Left Join
+  haskey(table1) ## Check key
+  setkeyv(table1, key_list) ## Set key programatically
+  join_key <- c("key1" = "key2") ## Set key programatically
+  table1[table2, on = join_key]
   
   # Normal data.frame JOINS
-  merge(x = table1, y = table2, by= "var") ## Inner Join
-  merge(x = table1, y = table2, by.x = "var1", by.y = "var2")
-  merge(x = table1, y = table2, by= "var", all = T) ## Full Join
-  merge(x = table1, y = table2, by= "var", all.x = T) ## Left / Right Join
-  
+  merge(x = table1, y = table2, by = "key") ## Inner Join
+  merge(x = table1, y = table2, by.x = "key1", by.y = "key2")
+  merge(x = table1, y = table2, by = "key", all = T) ## Full Join
+  merge(x = table1, y = table2, by = "key", all.x = T) ## Left / Right Join
   
   
