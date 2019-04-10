@@ -58,7 +58,7 @@ Pr_2$Exportaciones = apply(Pr_1, 1, FUN = function(x) {
 })
 
 ## 3.2 Removing self-portabilities
-Pr_2 = Pr_2[-which(Pr_2$Donante.Grupo == Pr_2$Operador.Grupo),]
+Pr_2 = Pr_2[!which(Pr_2$Donante.Grupo == Pr_2$Operador.Grupo),]
 
 #### 4.Shiny Application ####
 

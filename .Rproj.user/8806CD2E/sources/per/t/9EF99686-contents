@@ -201,7 +201,7 @@ write.csv(Results.Sample, file = "Tablita.csv",row.names=TRUE, na="")
   table[, list(var1, name = var2)]  # You can change names. No "" needed.
   table[, .(var1, name = var2)] ## Abreviation
   table[,"var1"]  # Returns a data.table
-  table[,var1]  # Returns a vector, not like list(var1)
+  table[,var1]
   table[, list(meanvar1 = mean(var1))] # list() to preserve the data.table when 1 column selected.
   table[,hist(var1)]  ## you can perform calculations on the j part.
   table[, .N, by = var1]  # Column called "N" with the Nrow per group.
@@ -247,4 +247,6 @@ write.csv(Results.Sample, file = "Tablita.csv",row.names=TRUE, na="")
   merge(x = table1, y = table2, by = "key", all = T) ## Full Join
   merge(x = table1, y = table2, by = "key", all.x = T) ## Left / Right Join
   
-  
+  ## pivot tables
+  library(reshape2)
+  melt(table1, id.vars = c("var1", "var2"), measure.vars = c("var3", "var4"))

@@ -17,28 +17,87 @@ ggplot(data = Porta.2[itemstoplot,],
                aes(x=VALUE.2011, xend=VALUE.2016, y=NAME, yend=NAME), size = 2,
                arrow = arrow(length = unit(0.5, "cm")))
 
-#### cambio dataset
 
-Porta.3 = Porta.1
 
-Porta.3$Importaciones = sapply(Porta.1$Importaciones, function(x) {
-  x = x + x * runif(1,0,2)
-  x
+## Simulation starting data
+## Starting pattern
+Pr_0A = data.table(
+  c(rep(1804,25)),
+  c(rep("Movistar",5),
+    rep("Vodafone",5),
+    rep("Orange",5),
+    rep("Masmovil",5),
+    rep("Resto",5)),
+  c(rep(c("Movistar", "Vodafone", "Orange", "Masmovil", "Resto"), 5)),
+  c(1, 6, 5, 7, 2,
+    4, 2, 7, 2, 3,
+    6, 4, 2, 4, 3,
+    8, 8, 7, 1, 2,
+    5, 4, 5, 4, 5
+  )
+)
+
+## Stable random series to transform starting pattern
+a = sapply(1:25, FUN = function(x) runif(1,-1,1)) # Serie of 25 random numbers
+
+for (i in c(1701, 1702, 1703, 1704, 1705, 1706, 1707, 1708, 1709, 1710, 1711, 1712, 1801, 1802, 1803, 1804, 1805, 1806)) {
+  print(i)
+  a = sapply(a, FUN = function(x) (x + runif(1,-1,1) / 1.1 )) # Modification of the random numbers
+  # Another random number is summed and it is divided but some number to make some decay.
+  
+  Pr_0A = rbind(Pr_0A, data.table(
+    c(rep(i,25)),
+    c(rep("Movistar",5),
+      rep("Vodafone",5),
+      rep("Orange",5),
+      rep("Masmovil",5),
+      rep("Resto",5)),
+    c(rep(c("Movistar", "Vodafone", "Orange", "Masmovil", "Resto"), 5)),
+    abs(c(1, 6, 5, 7, 2,
+          4, 2, 7, 2, 3,
+          6, 4, 2, 4, 3,
+          8, 8, 7, 1, 2,
+          5, 4, 5, 4, 5
+    ) + a)
+  )) 
+}
+colnames(Pr_0A) <- c("ano.mes","Operador.Grupo", "Donante.Grupo", "Importaciones")
+Pr_0A[,ano.mes:= as.integer(ano.mes)]
+Pr_0A = Pr_0A[Pr_1, .(ano.mes, Operador.Grupo, Donante.Grupo, Importaciones, Referencia), on = .(ano.mes, Operador.Grupo, Donante.Grupo)]
+
+# Reference adjust
+
+Pr_1 = Pr0A
+Pr_2 = Pr_1
+
+Pr_2$Exportaciones = apply(Pr_1, 1, FUN = function(x) {
+  TargetRow = intersect(which(Pr_1$Donante.Grupo == x["Operador.Grupo"]),
+                        intersect(which(Pr_1$Operador.Grupo == x["Donante.Grupo"]),
+                                  which(Pr_1$ano.mes == x["ano.mes"])))
+  Pr_1$Importaciones[TargetRow]
 })
 
+#### cambio dataset
+Porta.1 = Pr_2
+Porta.3 = Pr_2
+# 
+# Porta.3$Importaciones = sapply(Porta.1$Importaciones, function(x) {
+#   x = x + x * runif(1,0,2)
+#   x
+# })
 Porta.4 = as.data.table(Porta.3)
-Porta.4$Referencia = Porta.1[which(Porta.1$ano.mes == 1804),"Importaciones"]
+Porta.4$Referencia = Porta.1[,"Importaciones"]
 
 Porta.5 = Porta.4
 Porta_F = function(x) {x %>%
   .[, .( resta = sum(Importaciones)-sum(Referencia), Import = sum(Importaciones), Refer = sum(Referencia), Export = sum(Exportaciones)), by = list(ano.mes, Operador.Grupo)]}
 
 for  (z in levels(as.factor(Porta.5$ano.mes))) {
-  for (i in levels(Porta.5$Operador.Grupo)) {
+  for (i in levels(as.factor(Porta.5$Operador.Grupo))) {
     print(i)
     print(z)
-    if (abs(Porta.5_F(Porta.5[ano.mes == z,])[Operador.Grupo == i,resta]) > 2)
-    { Porta.5[ano.mes == z,][Operador.Grupo == i, "Importaciones" ] = Porta.5[ano.mes == z,][Operador.Grupo == i, "Importaciones"] * Porta.5_F(Porta.5[ano.mes == z,])[Operador.Grupo == i, Refer/Import]}
+    if (abs(Porta_F(Porta.5[ano.mes == z,])[Operador.Grupo == i,resta]) > 2)
+    { Porta.5[ano.mes == z,][Operador.Grupo == i, "Importaciones" ] = Porta.5[ano.mes == z,][Operador.Grupo == i, "Importaciones"] * Porta_F(Porta.5[ano.mes == z,])[Operador.Grupo == i, Refer/Import]}
   }
 }
 
@@ -65,37 +124,3 @@ colnames(Pr_1)[2] = "ano.mes"
 Pr_1 = Pr_1[as.numeric(as.character(ano.mes)) > 1609,]
 
 write.csv(Pr_1, file = "Sim_data.csv",row.names=FALSE, na="")
-
-## Simulation starting data
-
-Pr_0 = data.table(
-  c(rep(1804,25)),
-  c(rep("Movistar",5),
-    rep("Vodafone",5),
-    rep("Orange",5),
-    rep("Masmovil",5),
-    rep("Resto",5)),
-  c(rep(c("Movistar", "Vodafone", "Orange", "Masmovil", "Resto"), 5)),
-  c(1, 6, 5, 7, 2,
-    4, 2, 7, 2, 3,
-    6, 4, 2, 4, 3,
-    8, 8, 7, 1, 2,
-    5, 4, 5, 4, 5
-    )
-) ## WIP
-colnames(Pr_0) <- c("ano.mes","Operador.Grupo", "Donante.Grupo", "Importaciones")
-Pr_0A = merge(Pr_0, Pr_1, by = "Join")
-Pr_0[Pr_1, on = .(ano.mes, Operador.Grupo, Donante.Grupo)]
-
-
-
-## Gráfico cascada
-Pr_X = Porta_F(Pr_2[Operador.Grupo == "Vodafone"])
-Pr_X[,"end":= cumsum(Pr_X$Import - Pr_X$Export)][,"start" := c(0, Pr_X[1:(.N-2), end], 0)]
-Pr_X[, "id" := 1:.N][,"sign" := {if(Import - Export >= 0) {"b"} else {"a"}}, by = id][c(1, .N),"sign" := "c"]
-ggplot(Pr_X, aes(id, fill = sign)) + 
-  geom_rect(aes(xmin = id - 0.45, xmax = id + 0.45, ymin = end, ymax = start))
-
-filter(Pr_2, Operador.Grupo == input$Operator & ano.mes >= input$MinYear)[, list(Import = sum("Importaciones"),
-                                                                                 Export = sum("Exportaciones"),
-                                                                                 by = ano.mes)][,"end":= cumsum(Upd.Pr_2$Import - Upd.Pr_2$Export)][,"start" := c(0, Upd.Pr_2[1:(.N-2), end], 0)][, "id" := 1:.N][,"sign" := {if(Import - Export >= 0) {"b"} else {"a"}}, by = id][c(1, .N),"sign" := "c"]
