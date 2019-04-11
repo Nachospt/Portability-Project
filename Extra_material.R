@@ -17,30 +17,15 @@ ggplot(data = Porta.2[itemstoplot,],
                aes(x=VALUE.2011, xend=VALUE.2016, y=NAME, yend=NAME), size = 2,
                arrow = arrow(length = unit(0.5, "cm")))
 
-
-
 ## Simulation starting data
+set.seed(0)
 ## Starting pattern
-Pr_0A = data.table(
-  c(rep(1804,25)),
-  c(rep("Movistar",5),
-    rep("Vodafone",5),
-    rep("Orange",5),
-    rep("Masmovil",5),
-    rep("Resto",5)),
-  c(rep(c("Movistar", "Vodafone", "Orange", "Masmovil", "Resto"), 5)),
-  c(1, 6, 5, 7, 2,
-    4, 2, 7, 2, 3,
-    6, 4, 2, 4, 3,
-    8, 8, 7, 1, 2,
-    5, 4, 5, 4, 5
-  )
-)
+Pr_0A = data.table()
 
 ## Stable random series to transform starting pattern
 a = sapply(1:25, FUN = function(x) runif(1,-1,1)) # Serie of 25 random numbers
 
-for (i in c(1701, 1702, 1703, 1704, 1705, 1706, 1707, 1708, 1709, 1710, 1711, 1712, 1801, 1802, 1803, 1804, 1805, 1806)) {
+for (i in c(1610, 1611, 1612, 1701, 1702, 1703, 1704, 1705, 1706, 1707, 1708, 1709, 1710, 1711, 1712, 1801, 1802, 1803, 1804, 1805, 1806, 1807, 1808, 1809, 1810, 1811, 1812)) {
   print(i)
   a = sapply(a, FUN = function(x) (x + runif(1,-1,1) / 1.1 )) # Modification of the random numbers
   # Another random number is summed and it is divided but some number to make some decay.
@@ -58,16 +43,17 @@ for (i in c(1701, 1702, 1703, 1704, 1705, 1706, 1707, 1708, 1709, 1710, 1711, 17
           6, 4, 2, 4, 3,
           8, 8, 7, 1, 2,
           5, 4, 5, 4, 5
-    ) + a)
+    ) + a )
   )) 
 }
 colnames(Pr_0A) <- c("ano.mes","Operador.Grupo", "Donante.Grupo", "Importaciones")
 Pr_0A[,ano.mes:= as.integer(ano.mes)]
-Pr_0A = Pr_0A[Pr_1, .(ano.mes, Operador.Grupo, Donante.Grupo, Importaciones, Referencia), on = .(ano.mes, Operador.Grupo, Donante.Grupo)]
 
 # Reference adjust
+Pr_1 = Pr_0A
 
-Pr_1 = Pr0A
+## 3.2 Removing self-portabilities
+Pr_1 = Pr_1[!which(Pr_1$Donante.Grupo == Pr_1$Operador.Grupo),]
 Pr_2 = Pr_1
 
 Pr_2$Exportaciones = apply(Pr_1, 1, FUN = function(x) {
@@ -86,41 +72,51 @@ Porta.3 = Pr_2
 #   x
 # })
 Porta.4 = as.data.table(Porta.3)
-Porta.4$Referencia = Porta.1[,"Importaciones"]
+Porta.4 = Porta.4[Pr_Ref, .(ano.mes, Operador.Grupo, Donante.Grupo, Importaciones, Exportaciones, Ref.Import, Ref.Export), on = .(ano.mes, Operador.Grupo), nomatch = 0]
 
 Porta.5 = Porta.4
 Porta_F = function(x) {x %>%
-  .[, .( resta = sum(Importaciones)-sum(Referencia), Import = sum(Importaciones), Refer = sum(Referencia), Export = sum(Exportaciones)), by = list(ano.mes, Operador.Grupo)]}
+  .[, .( resta = sum(Importaciones)-mean(Ref.Import), Import = sum(Importaciones), Ref.Import = mean(Ref.Import), Export = sum(Exportaciones), Ref.Export = mean(Ref.Export)), by = list(ano.mes, Operador.Grupo)]}
 
-for  (z in levels(as.factor(Porta.5$ano.mes))) {
+while (Porta.5[abs(Exportaciones - Ref.Export) > 100, .N)]
+for (z in levels(as.factor(Porta.5$ano.mes))) {
   for (i in levels(as.factor(Porta.5$Operador.Grupo))) {
     print(i)
     print(z)
     if (abs(Porta_F(Porta.5[ano.mes == z,])[Operador.Grupo == i,resta]) > 2)
-    { Porta.5[ano.mes == z,][Operador.Grupo == i, "Importaciones" ] = Porta.5[ano.mes == z,][Operador.Grupo == i, "Importaciones"] * Porta_F(Porta.5[ano.mes == z,])[Operador.Grupo == i, Refer/Import]}
+    { Porta.5[ano.mes == z,][Operador.Grupo == i, "Importaciones" ] = Porta.5[ano.mes == z,][Operador.Grupo == i, "Importaciones"] * Porta_F(Porta.5[ano.mes == z,])[Operador.Grupo == i, Ref.Import/Import]}
   }
 }
 
 View(cbind(Porta.3, Porta.5))
 
 ## CNMC data
+## Import data
+Pr_X = fread("C:\\Users\\a1380\\Desktop\\Portability Project\\9. Portabilidades de numeración móvil.csv",skip = 4)
+colnames(Pr_X)[2] = "Operador.Grupo"
+Pr_X[, V1 := NULL]
+Pr_X = Pr_X[c(2:7, 9:14)][, Operador.Grupo := c("Movistar", "Vodafone", "Orange", "Yoigo", "Masmovil", "Resto","Movistar", "Vodafone", "Orange", "Yoigo", "Masmovil", "Resto")]
+Pr_X = Pr_X[Operador.Grupo %in% c("Movistar", "Vodafone", "Orange", "Masmovil", "Resto"),]
 
-Pr_1 = fread("C:\\Users\\a1380\\Desktop\\Portability Project\\9. Portabilidades de numeración móvil.csv",skip = 4)
-colnames(Pr_1)[2] = "Grupo.Operador"
-Pr_1[, V1 := NULL]
-Pr_1 = Pr_1[9:14,][Grupo.Operador %in% c("Movistar", "Vodafone", "Orange", "Grupo MASMOV!L", "OMV"),]
-
-##  
-colnames(Pr_1)[2:length(colnames(Pr_1))] = colnames(Pr_1)[2:length(colnames(Pr_1))] %>%
+##
+colnames(Pr_X)[2:length(colnames(Pr_X))] = colnames(Pr_X)[2:length(colnames(Pr_X))] %>%
   substring(1,3) %>%
   sapply(.,function(x) do.call("switch", as.list(c(x,"Ene" = "01","Feb" = "02", "Mar" = "03", "Abr" = "04", "May" = "05", "Jun" = "06", "Jul" = "07", "Ago" = "08", "Sep" = "09", "Oct" = "10", "Nov" = "11", "Dic" = "12")))) %>%
-  paste(substring(colnames(Pr_1)[2:length(colnames(Pr_1))], 7, 8), sep = "",.)
+  paste(substring(colnames(Pr_X)[2:length(colnames(Pr_X))], 7, 8), sep = "",.)
 
 ## Pivoting year columns
-Pr_1 <- melt(Pr_1, id=c("Grupo.Operador"))
-colnames(Pr_1)[2] = "ano.mes"
+## Export elements
+Pr_Exp <- melt(Pr_X[6:10], id=c("Operador.Grupo"))
+colnames(Pr_Exp)[2:3] = c("ano.mes", "Ref.Export")
 
-## Selecting recent data
-Pr_1 = Pr_1[as.numeric(as.character(ano.mes)) > 1609,]
+## Import elements
+Pr_Imp <- melt(Pr_X[1:5], id=c("Operador.Grupo"))
+colnames(Pr_Imp)[2:3] = c("ano.mes", "Ref.Import")
 
-write.csv(Pr_1, file = "Sim_data.csv",row.names=FALSE, na="")
+## Joining both elements
+Pr_Ref = Pr_Imp[Pr_Exp, .(ano.mes, Operador.Grupo, Ref.Import, Ref.Export), on = .(ano.mes, Operador.Grupo)]
+
+## Selecting recent data (after transformingobject classes)
+Pr_Ref[,ano.mes := sapply(ano.mes, as.character)][,ano.mes := sapply(ano.mes, as.integer)][ano.mes > 1609]
+
+write.csv(Pr_X, file = "Sim_data.csv",row.names=FALSE, na="")

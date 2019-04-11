@@ -20,6 +20,8 @@
 
 # 1.1 Library Load
 library(ggplot2)
+library(ggThemeAssist)
+library(plotly)
 library(data.table)
 library(dplyr)
 library(reshape)
@@ -170,7 +172,7 @@ server <- function(input, output) {
       geom_polygon(data = zones, aes(y = Importaciones, x = Exportaciones, group = as.factor(group)), alpha = 0.5, fill = zones$color, color = zones$color, linetype = 0, inherit.aes = FALSE) +
       geom_point(size = 2, aes(colour = Donante.Grupo)) +
       geom_path(aes(color = Donante.Grupo), arrow = arrow(length=unit(0.30,"cm"), type = "closed")) +
-      geom_text(aes(label = Upd.Pr_2()[,"ano.mes"], y = Importaciones + 5000), size = 3, color = "grey29") +
+      geom_text(aes(label = as.character(Upd.Pr_2()[,"ano.mes"]), y = Importaciones + 5000), size = 3, color = "grey29") +
       scale_color_manual(values = sapply(levels(as.factor(Upd.Pr_2()[, "Donante.Grupo"])),
                                          function(x) switch(x, "Vodafone" = "#E60000", "Movistar" = "#00B6E8", "Masmovil" = "#FFE500", "Orange" = "#FF9800", "Resto" = "#01B8AA"))) +
       coord_cartesian(xlim = c(0, max(Upd.Pr_2()[,c("Importaciones", "Exportaciones")]) * 1.04), ylim = c(0, max(Upd.Pr_2()[,c("Importaciones", "Exportaciones")]) * 1.04)) +
