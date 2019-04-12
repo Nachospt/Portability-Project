@@ -1,13 +1,29 @@
 server <- function(input, output) {
   Upd.Pr_1 <- reactive({filter(Pr_1, Operador.Grupo == input$Operator & ano.mes >= input$MinYear)})
   Upd.Pr_2 <- reactive({filter(Pr_2, Operador.Grupo == input$Operator & ano.mes >= input$MinYear)})
+  
+  Upd.Pr_ClassicTable <- reactive({Pr_TempTable = as.data.table(filter(Pr_1, ano.mes == input$MinYear))
+  Pr_ClassicTable = as.data.table(matrix(rep(0,25),5,5))
+  colnames(Pr_ClassicTable) = c("Movistar", "Vodafone", "Orange", "Masmovil", "Resto")
+  rownames(Pr_ClassicTable) = c("Movistar", "Vodafone", "Orange", "Masmovil", "Resto")
+  for (i in 1:ncol(Pr_ClassicTable)) {
+    for (j in 1:ncol(Pr_ClassicTable)) {
+      Pr_ClassicTable[i,j] = if (i > j) { Pr_TempTable[Operador.Grupo == rownames(Pr_ClassicTable)[i] & Donante.Grupo == rownames(Pr_ClassicTable)[j], Importaciones] }
+      else if (i < j) { Pr_TempTable[Operador.Grupo == rownames(Pr_ClassicTable)[j] & Donante.Grupo == rownames(Pr_ClassicTable)[i], Importaciones] }
+      else { Pr_TempTable[Operador.Grupo == rownames(Pr_ClassicTable)[i] & Donante.Grupo == rownames(Pr_ClassicTable)[i], Importaciones]
+        }
+    }
+  }
+  Pr_ClassicTable
+  })
+  
   Upd.Pr_Waterfall <- reactive({Pr_Waterfall = as.data.table(Upd.Pr_2())
   Pr_Waterfall = Pr_Waterfall[, list(Import = sum(Importaciones), Export = sum(Exportaciones)), by = list(ano.mes, Operador.Grupo)][,"end":= cumsum(Import - Export)]
   Pr_Waterfall[,"start" := c(0, Pr_Waterfall[1:(.N-2), end], 0)][, "id" := 1:.N][,"sign" := {if(Import - Export >= 0) {"Positive"} else {"Negative"}}, by = id][.N,"sign" := "Net"]
     })
   
   # Classic table
-  output$ClassicTable <- renderTable({Pr_2[ano.mes == "1804"]})
+  output$ClassicTable <- renderTable({Upd.Pr_ClassicTable()})
   
   output$description <- renderText({
     paste0(nrow(Upd.Pr_1()))})

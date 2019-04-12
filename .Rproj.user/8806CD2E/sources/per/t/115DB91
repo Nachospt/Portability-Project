@@ -5,18 +5,18 @@
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "3738400839",
+    "hash" : "1547245768",
     "id" : "115DB91",
-    "lastKnownWriteTime" : 1554993557,
-    "last_content_update" : 1554993557680,
+    "lastKnownWriteTime" : 1555073318,
+    "last_content_update" : 1555073318165,
     "path" : "C:/Users/a1380/Desktop/Portability Project/Extra_material.R",
     "project_path" : "Extra_material.R",
     "properties" : {
-        "cursorPosition" : "80,58",
+        "cursorPosition" : "85,76",
         "scrollLine" : "68",
         "tempName" : "Untitled1"
     },
-    "relative_order" : 6,
+    "relative_order" : 5,
     "source_on_save" : false,
     "source_window" : "",
     "type" : "r_source"

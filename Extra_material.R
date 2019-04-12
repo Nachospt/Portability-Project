@@ -51,16 +51,16 @@ Pr_0A[,ano.mes:= as.integer(ano.mes)]
 
 # Reference adjust
 Pr_1 = Pr_0A
-
-## 3.2 Removing self-portabilities
-Pr_1 = Pr_1[!which(Pr_1$Donante.Grupo == Pr_1$Operador.Grupo),]
 Pr_2 = Pr_1
 
-Pr_2$Exportaciones = apply(Pr_1, 1, FUN = function(x) {
-  TargetRow = intersect(which(Pr_1$Donante.Grupo == x["Operador.Grupo"]),
-                        intersect(which(Pr_1$Operador.Grupo == x["Donante.Grupo"]),
-                                  which(Pr_1$ano.mes == x["ano.mes"])))
-  Pr_1$Importaciones[TargetRow]
+## 3.2 Removing self-portabilities
+Pr_2 = Pr_2[!which(Pr_2$Donante.Grupo == Pr_2$Operador.Grupo),]
+
+Pr_2$Exportaciones = apply(Pr_2, 1, FUN = function(x) {
+  TargetRow = intersect(which(Pr_2$Donante.Grupo == x["Operador.Grupo"]),
+                        intersect(which(Pr_2$Operador.Grupo == x["Donante.Grupo"]),
+                                  which(Pr_2$ano.mes == x["ano.mes"])))
+  Pr_2$Importaciones[TargetRow]
 })
 
 #### cambio dataset
@@ -78,7 +78,7 @@ Porta.5 = Porta.4
 Porta_F = function(x) {x %>%
   .[, .( resta = sum(Importaciones)-mean(Ref.Import), Import = sum(Importaciones), Ref.Import = mean(Ref.Import), Export = sum(Exportaciones), Ref.Export = mean(Ref.Export)), by = list(ano.mes, Operador.Grupo)]}
 
-while (Porta.5[abs(Exportaciones - Ref.Export) > 100, .N)]
+#while (Porta.5[abs(Exportaciones - Ref.Export) > 100, .N)]
 for (z in levels(as.factor(Porta.5$ano.mes))) {
   for (i in levels(as.factor(Porta.5$Operador.Grupo))) {
     print(i)
